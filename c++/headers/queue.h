@@ -1,9 +1,10 @@
 #pragma once
 #include <iostream>
+#include <string>
 using namespace std;
 
 struct QNode {
-    int data;
+    string data;
     QNode* next;
 };
 
@@ -14,7 +15,7 @@ struct Queue {
 
 void InitQueue(Queue* queue);
 void CleanQueue(Queue* queue);
-void QPUSH(Queue* queue, int data);
+void QPUSH(Queue* queue, const string& data);
 void QPOP(Queue* queue);
 void PRINT(Queue* queue);
 void SaveQueue(Queue* queue, ostream& out);

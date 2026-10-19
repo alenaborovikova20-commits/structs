@@ -1,6 +1,6 @@
 #include "../headers/avl.h"
 #include <algorithm>
-#include <queue>
+
 
 int getHeight(ANode* node) {
     if (!node) return 0;
@@ -53,6 +53,7 @@ ANode* balance(ANode* node) {
     return node;
 }
 
+
 ANode* insert(ANode* node, int key) {
     if (!node) return new ANode{key, nullptr, nullptr, 1};
     if (key < node->key)
@@ -99,20 +100,28 @@ void TINSERT(ANode*& node, int key) { node = insert(node, key); }
 void TDEL(ANode*& node, int key) { node = remove(node, key); }
 ANode* TGET(ANode* node, int key) { return search(node, key); }
 
-void PRINT(ANode* node) {
-    if (!node) {
-        return;
-    }
-    queue<ANode*> q;
-    q.push(node);
-    while (!q.empty()) {
-        ANode* cur = q.front(); q.pop();
-        cout << cur->key << " ";
-        if (cur->left) q.push(cur->left);
-        if (cur->right) q.push(cur->right);
-    }
-    cout << endl;
+
+void PRINT(ANode* n) {
+    if (!n) return;
+    cout << n->key << " ";
+    PRINT(n->left);
+    PRINT(n->right);
 }
+
+void PRINT_PRE(ANode* n) {
+    if (!n) return;
+    PRINT_PRE(n->left);
+    cout << n->key << " ";
+    PRINT_PRE(n->right);
+}
+
+void PRINT_IN(ANode* n) {
+    if (!n) return;
+    PRINT_IN(n->left);
+    PRINT_IN(n->right);
+    cout << n->key << " ";
+}
+
 
 void CleanTree(ANode*& node) {
     if (!node) return;
@@ -122,32 +131,31 @@ void CleanTree(ANode*& node) {
     node = nullptr;
 }
 
-void savePre(ANode* node, ostream& out) {
+
+static int CountNodes(ANode* node) {
+    if (!node) return 0;
+    return 1 + CountNodes(node->left) + CountNodes(node->right);
+}
+
+static void WritePreorder(ANode* node, ostream& out) {
     if (!node) return;
-    out << node->key << " ";
-    savePre(node->left, out);
-    savePre(node->right, out);
+    out << " " << node->key;             
+    WritePreorder(node->left, out);
+    WritePreorder(node->right, out);
 }
 
 void SaveTree(ANode* node, ostream& out) {
-    int count = 0;
-    queue<ANode*> q;
-    if (node) q.push(node);
-    while (!q.empty()) {
-        ANode* c = q.front(); q.pop(); count++;
-        if (c->left) q.push(c->left);
-        if (c->right) q.push(c->right);
-    }
-    out << count << "\n";
-    savePre(node, out);
-    out << "\n";
+    out << CountNodes(node);             
+    WritePreorder(node, out);            
+    out << "\n";                         
 }
 
 void LoadTree(ANode*& node, istream& in) {
     CleanTree(node);
     int count; in >> count;
     for (int i = 0; i < count; i++) {
-        int v; in >> v;
+        int v;
+        in >> v;
         TINSERT(node, v);
     }
 }

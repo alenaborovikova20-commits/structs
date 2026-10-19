@@ -1,62 +1,44 @@
 #include "../headers/queue.h"
 
 void InitQueue(Queue* queue) {
-    queue->head = nullptr;
-    queue->tail = nullptr;
+    queue->head = queue->tail = nullptr;
 }
 
-void QPUSH(Queue* queue, int data) {
-    QNode* new_node = new QNode{data, nullptr};
-    if (queue->tail != nullptr) {
-        queue->tail->next = new_node;
-    }
-    queue->tail = new_node;
-    if (queue->head == nullptr) {
-        queue->head = new_node;
-    }
+void QPUSH(Queue* queue, const string& data) {
+    QNode* n = new QNode{data, nullptr};
+    if (queue->tail) queue->tail->next = n;
+    queue->tail = n;
+    if (!queue->head) queue->head = n;
 }
 
 void QPOP(Queue* queue) {
-    if (queue->head == nullptr) {
-        return;
-    }
-    QNode* del_node = queue->head;
-    queue->head = del_node->next;
-    delete del_node;
-    if (queue->head == nullptr) {
-        queue->tail = nullptr;
-    }
+    if (!queue->head) return;
+    QNode* del = queue->head;
+    queue->head = del->next;
+    delete del;
+    if (!queue->head) queue->tail = nullptr;
 }
 
 void PRINT(Queue* queue) {
-    if (queue->head == nullptr) {
-        return;
-    }
-    QNode* cur_node = queue->head;
-    while (cur_node != nullptr) {
-        cout << cur_node->data << " ";
-        cur_node = cur_node->next;
-    }
+    for (QNode* c = queue->head; c; c = c->next) cout << c->data << " ";
     cout << endl;
 }
 
-void CleanQueue(Queue* queue) {
-    while (queue->head != nullptr) QPOP(queue);
-}
+void CleanQueue(Queue* queue) { while (queue->head) QPOP(queue); }
 
-void SaveQueue(Queue* queue, ostream& out) {
+void SaveQueue(Queue* queue, ostream& os) {
     int count = 0;
     for (QNode* c = queue->head; c; c = c->next) count++;
-    out << count << "\n";
-    for (QNode* c = queue->head; c; c = c->next) out << c->data << " ";
-    out << "\n";
+    os << count << "\n";
+    for (QNode* c = queue->head; c; c = c->next) os << c->data << " ";
+    os << "\n";
 }
 
-void LoadQueue(Queue* queue, istream& in) {
+void LoadQueue(Queue* queue, istream& is) {
     CleanQueue(queue);
-    int count; in >> count;
-    for (int i = 0; i < count; i++) {
-        int v; in >> v;
-        QPUSH(queue, v);
-    }
+    int count; is >> count;
+    for (int i = 0; i < count; ++i) { 
+        string v; 
+        is >> v; 
+        QPUSH(queue, v); }
 }
