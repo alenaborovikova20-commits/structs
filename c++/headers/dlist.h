@@ -11,6 +11,7 @@ struct DNode {
 
 struct Dlist {
     DNode* head;
+    DNode* tail;
 };
 
 void InitDlist(Dlist* dlist);

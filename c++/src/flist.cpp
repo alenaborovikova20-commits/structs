@@ -7,8 +7,7 @@ void CleanFlist(Flist* flist) {
     while (cur) { Node* n = cur->next; delete cur; cur = n; }
     flist->head = nullptr;
 }
- 
-//  В начало
+
 void FPUSH(Flist* flist, const string& data) {
     flist->head = new Node{data, flist->head};
 }
@@ -30,9 +29,10 @@ void FPUSH_Before(Flist* flist, Node* node, const string& data) {
     if (!node || !flist->head) return;
     if (flist->head == node) { 
         flist->head = new Node{data, flist->head}; 
-        return; }
+        return; 
+    }
     Node* cur = flist->head;
-    while (cur->next && cur->next != node) {cur = cur->next;}
+    while (cur->next && cur->next != node) { cur = cur->next; }
     if (!cur->next) return;
     cur->next = new Node{data, cur->next};
 }
@@ -56,7 +56,7 @@ void FDEL_End(Flist* flist) {
     if (!flist->head->next) { delete flist->head; flist->head = nullptr; return; }
     Node* cur = flist->head;
     while (cur->next->next) cur = cur->next;
-     delete cur->next;
+    delete cur->next;
     cur->next = nullptr;
 }
 
@@ -73,8 +73,10 @@ void FDEL_Before(Flist* flist, Node* next_node) {
 
 Node* FGET(Flist* flist, const string& find_data) {
     Node* cur = flist->head;
-    while (cur) { if (cur->key == find_data) return cur;
-         cur = cur->next; }
+    while (cur) { 
+        if (cur->key == find_data) return cur;
+        cur = cur->next; 
+    }
     return nullptr;
 }
 

@@ -12,11 +12,7 @@ int getBalance(ANode* node) {
     return getHeight(node->left) - getHeight(node->right);
 }
 
-void updateHeight(ANode* node) {
-    if (node) {
-        node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
-    }
-}
+void updateHeight(ANode* node) {if (node) {node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));}}
 
 ANode* rotateRight(ANode* y) {
     ANode* x = y->left;
@@ -106,20 +102,6 @@ void PRINT(ANode* n) {
     cout << n->key << " ";
     PRINT(n->left);
     PRINT(n->right);
-}
-
-void PRINT_PRE(ANode* n) {
-    if (!n) return;
-    PRINT_PRE(n->left);
-    cout << n->key << " ";
-    PRINT_PRE(n->right);
-}
-
-void PRINT_IN(ANode* n) {
-    if (!n) return;
-    PRINT_IN(n->left);
-    PRINT_IN(n->right);
-    cout << n->key << " ";
 }
 
 

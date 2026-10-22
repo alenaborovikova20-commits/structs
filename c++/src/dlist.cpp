@@ -1,32 +1,33 @@
 #include "../headers/dlist.h"
 
-void InitDlist(Dlist* dlist) { dlist->head = nullptr; }
+void InitDlist(Dlist* dlist) { dlist->head = nullptr; dlist->tail = nullptr; }
 
 void CleanDlist(Dlist* dlist) {
     DNode* cur = dlist->head;
     while (cur) { DNode* n = cur->next; delete cur; cur = n; }
     dlist->head = nullptr;
+    dlist->tail = nullptr;
 }
 
 void LPUSH(Dlist* dlist, const string& data) {
     DNode* n = new DNode{data, nullptr, dlist->head};
     if (dlist->head) dlist->head->prev = n;
+    else dlist->tail = n;
     dlist->head = n;
 }
 
 void LPUSH_End(Dlist* dlist, const string& data) {
-    DNode* n = new DNode{data, nullptr, nullptr};
-    if (!dlist->head) { dlist->head = n; return; }
-    DNode* cur = dlist->head;
-    while (cur->next) cur = cur->next;
-    cur->next = n;
-    n->prev = cur;
+    DNode* n = new DNode{data, dlist->tail, nullptr};
+    if (!dlist->head) { dlist->head = n; }
+    else { dlist->tail->next = n; }
+    dlist->tail = n;
 }
 
 void LPUSH_After(Dlist* dlist, DNode* node, const string& data) {
     if (!node) return;
     DNode* n = new DNode{data, node, node->next};
     if (node->next) node->next->prev = n;
+    else dlist->tail = n;
     node->next = n;
 }
 
@@ -34,7 +35,8 @@ void LPUSH_Before(Dlist* dlist, DNode* node, const string& data) {
     if (!node || !dlist->head) return;
     if (dlist->head == node) {
         LPUSH(dlist, data);
-         return; }
+        return; 
+    }
     DNode* n = new DNode{data, node->prev, node};
     node->prev->next = n;
     node->prev = n;
@@ -45,16 +47,22 @@ void LDEL_Head(Dlist* dlist) {
     DNode* del = dlist->head;
     dlist->head = del->next;
     if (dlist->head) dlist->head->prev = nullptr;
+    else dlist->tail = nullptr;
     delete del;
 }
 
 void LDEL_End(Dlist* dlist) {
     if (!dlist->head) return;
-    if (!dlist->head->next) { delete dlist->head; dlist->head = nullptr; return; }
-    DNode* cur = dlist->head;
-    while (cur->next) cur = cur->next;
-    cur->prev->next = nullptr;
-    delete cur;
+    if (dlist->head == dlist->tail) { 
+        delete dlist->head; 
+        dlist->head = nullptr; 
+        dlist->tail = nullptr; 
+        return; 
+    }
+    DNode* del_node = dlist->tail;
+    dlist->tail = dlist->tail->prev;
+    dlist->tail->next = nullptr;
+    delete del_node;
 }
 
 void LDEL_After(Dlist* dlist, DNode* prev_node) {
@@ -62,6 +70,7 @@ void LDEL_After(Dlist* dlist, DNode* prev_node) {
     DNode* del = prev_node->next;
     prev_node->next = del->next;
     if (del->next) del->next->prev = prev_node;
+    else dlist->tail = prev_node;
     delete del;
 }
 
@@ -69,7 +78,8 @@ void LDEL_Before(Dlist* dlist, DNode* next_node) {
     if (!next_node || !dlist->head || dlist->head == next_node) return;
     if (dlist->head->next == next_node) {
         LDEL_Head(dlist); 
-        return; }
+        return; 
+    }
     DNode* del = next_node->prev;
     del->prev->next = next_node;
     next_node->prev = del->prev;
@@ -84,8 +94,7 @@ DNode* LGET(Dlist* dlist, const string& find_data) {
 
 DNode* LGET_Reverse(Dlist* dlist, const string& find_data) {
     if (!dlist->head) return nullptr;
-    DNode* cur = dlist->head;
-    while (cur->next) cur = cur->next;
+    DNode* cur = dlist->tail;
     while (cur) { if (cur->key == find_data) return cur; cur = cur->prev; }
     return nullptr;
 }
@@ -107,8 +116,7 @@ void PRINT(Dlist* dlist) {
 
 void PRINT_Reverse(Dlist* dlist) {
     if (!dlist->head) return;
-    DNode* cur = dlist->head;
-    while (cur->next) cur = cur->next;
+    DNode* cur = dlist->tail;
     while (cur) { cout << cur->key << " "; cur = cur->prev; }
     cout << endl;
 }
